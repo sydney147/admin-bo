@@ -1,0 +1,112 @@
+.upload-input {
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.settings-details label {
+  display: block;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.settings-details input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background-color: #f9f9f9;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.settings-details input:focus {
+  border-color: #dd9d74;
+  outline: none;
+  background-color: white;
+  box-shadow: 0 0 0 2px rgba(221, 157, 116, 0.25);
+}
+
+.save-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3a3226;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  background-color: #888;
+  cursor: wait;
+}
+
+.profile-pic-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.settings-profile-pic {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e0e0e0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.upload-input {
+  font-size: 0.9rem;
+}
+
+.edit-btn,
+.cancel-btn {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background-color: #3a3226;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.edit-btn:hover,
+.cancel-btn:hover {
+  background-color: #5a4d40;
+}
+
+.cancel-btn {
+  background-color: #999;
+}
+
+.cancel-btn:hover {
+  background-color: #777;
+}
+
+.settings-page {
+  padding: 40px 20px;
+  font-family: 'Roboto Mono', monospace;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  color: #000; /* ✅ Set all top-level text to black */
+}
+
+.settings-details label,
+.settings-details p,
+.settings-details input,
+.profile-pic-wrapper label,
+.save-btn,
+.edit-btn,
+.cancel-btn {
+  color: #000 !important; /* ✅ Force black text */
+}
+

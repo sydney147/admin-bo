@@ -1,0 +1,78 @@
+.feedback-page {
+    padding: 20px;
+    font-family: monospace;
+    color: black;
+  }
+  
+  .feedback-page h1 {
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
+  
+  .feedback-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .feedback-card {
+    display: flex;
+    gap: 16px;
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+  }
+  
+  .img-placeholder {
+    width: 100px;
+    height: 100px;
+    background-color: #eee;
+    color: #999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .feedback-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .feedback-info h3 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .feedback-info p {
+    margin: 0;
+    line-height: 1.4;
+  }
+  
+  .feedback-info strong {
+    font-weight: bold;
+  }
+  
+  .feedback-img {
+    margin-top: 8px;
+    max-width: 220px;
+    max-height: 220px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  

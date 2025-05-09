@@ -1,0 +1,74 @@
+.product-order-grid {
+    display: grid;
+    grid-auto-flow: column; /* Scroll horizontally */
+    grid-auto-columns: min-content; /* Only as wide as needed */
+    grid-template-rows: repeat(2, 1fr); /* Exactly 2 rows */
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    max-height: 380px;
+  }
+  
+  .product-order-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 12px;
+    background: white;
+    font-family: monospace;
+    width: 300px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    color: black;
+  }
+  
+  .product-order-card img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 6px;
+  }
+  
+  .product-order-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+  }
+  
+  .btn-approve,
+  .btn-deliver {
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-family: monospace;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-approve {
+    background-color: #16a34a;
+    color: white;
+  }
+  
+  .btn-deliver {
+    background-color: #2563eb;
+    color: white;
+  }
+  
+  .delivery-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  
+  .delivery-form input[type="datetime-local"] {
+    font-family: monospace;
+    font-size: 0.9rem;
+    padding: 5px;
+  }
+  
