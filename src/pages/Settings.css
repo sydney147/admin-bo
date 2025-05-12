@@ -1,48 +1,34 @@
-.upload-input {
-  margin: 10px 0;
-  font-size: 0.9rem;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f3f0;
+  color: #4b3b2a;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
 }
 
-.settings-details label {
-  display: block;
-  margin-top: 14px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #333;
+.settings-page {
+  padding: 1.5rem 2rem 2rem;
+  background-color: #f5f3f0;
+  color: #444;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.settings-details input {
+.settings-page h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #3e342e;
+  margin: 0;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #bfa58a;
+  padding-left: 1rem;
   width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background-color: #f9f9f9;
-  font-family: 'Roboto Mono', monospace;
-}
-
-.settings-details input:focus {
-  border-color: #dd9d74;
-  outline: none;
-  background-color: white;
-  box-shadow: 0 0 0 2px rgba(221, 157, 116, 0.25);
-}
-
-.save-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #3a3226;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.save-btn:disabled {
-  background-color: #888;
-  cursor: wait;
+  text-align: left;
 }
 
 .profile-pic-wrapper {
@@ -53,60 +39,129 @@
 }
 
 .settings-profile-pic {
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #e0e0e0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 4px solid #e8ddd0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   margin-bottom: 10px;
 }
 
 .upload-input {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  color: #5c4431;
 }
 
-.edit-btn,
-.cancel-btn {
+.settings-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.settings-details label {
+  display: block;
   margin-top: 16px;
-  padding: 10px 20px;
-  background-color: #3a3226;
-  color: white;
-  border: none;
-  border-radius: 6px;
   font-size: 0.95rem;
-  cursor: pointer;
-  margin-right: 10px;
+  font-weight: 600;
+  color: #5c4431;
 }
 
-.edit-btn:hover,
-.cancel-btn:hover {
-  background-color: #5a4d40;
+.settings-details input {
+  width: 95%;
+  padding: 10px 14px;
+  margin-top: 6px;
+  border: 1px solid #d4bfa6;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: #f9f4ef;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
 }
+
+.settings-details input:focus {
+  border-color: #c8a87e;
+  outline: none;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(200, 168, 126, 0.25);
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.save-btn,
+.edit-btn,
+.cancel-btn,
+.logout-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 600;
+  width:25%;
+  transition: background-color 0.3s ease;
+}
+
+.save-btn {
+  background-color: #a47148;  
+  color: #fff;
+  margin-top: 20px;
+}
+
+.save-btn:disabled {
+  background-color: #b5a391;
+  cursor: not-allowed;
+}
+
+.edit-btn {
+  background-color: #a88c71;   
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #a47148; 
+}
+
+.save-btn:hover {
+  background-color: #a88c71;
+}
+
 
 .cancel-btn {
   background-color: #999;
+  color: #fff;
+  margin-left: 15px;
 }
 
 .cancel-btn:hover {
   background-color: #777;
 }
 
-.settings-page {
-  padding: 40px 20px;
-  font-family: 'Roboto Mono', monospace;
-  background-color: #f9f9f9;
-  min-height: 100vh;
-  color: #000; /* ✅ Set all top-level text to black */
+.logout-btn {
+  background-color: red;
+  color: #fff;
+}
+
+.logout-btn:hover {
+  background-color: #8b3f3f;
 }
 
 .settings-details label,
-.settings-details p,
 .settings-details input,
-.profile-pic-wrapper label,
 .save-btn,
 .edit-btn,
-.cancel-btn {
-  color: #000 !important; /* ✅ Force black text */
+.cancel-btn,
+.logout-btn {
+  color: #3e2f20;
 }
+
 

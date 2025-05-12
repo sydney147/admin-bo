@@ -1,186 +1,207 @@
-/* Global default text color and base styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 body, html {
-    color: #000;
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f5f2;
-  }
-  
-  .shop-profile {
-    padding: 2rem;
-    background-color: #f8f5f2;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .shop-header-banner {
-    position: relative;
-    background-size: cover;
-    background-position: center;
-    height: 220px;
-    border-radius: 12px;
-    margin-bottom: 3.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  .shop-info {
-    position: absolute;
-    bottom: -40px;
-    left: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-  }
-  
-  .shop-profile-photo {
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    object-fit: cover;
-    background-color: #fafafa;
-    box-shadow: 0 0 0 2px #ccc;
-  }
-  
-  .shop-name {
-    font-size: 1.6rem;
-    font-weight: bold;
-    background: white;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    color: #000;
-  }
-  
-  .shop-details-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 14px;
-    box-shadow: 0 3px 10px rgba(154, 109, 80, 0.08);
-    max-width: 720px;
-    margin: 0 auto;
-    color: #000;
-  }
-  
-  .shop-details-card h2 {
-    margin-bottom: 1.5rem;
-    color: #9a6d50;
-    font-size: 1.4rem;
-    font-weight: 600;
-  }
-  
-  .shop-info-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 1.5rem;
-  }
-  
-  .shop-info-list li {
-    margin-bottom: 1rem;
-    color: #000;
-    font-size: 1rem;
-  }
-  
-  .shop-edit-form label {
-    display: block;
-    margin-bottom: 1.2rem;
-    font-weight: 500;
-    color: #000;
-  }
-  
-  .shop-edit-form input,
-  .shop-edit-form textarea {
-    width: 100%;
-    padding: 0.6rem 0.9rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background-color: #fdfdfd;
-    color: #000;
-  }
-  
-  .shop-edit-form textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-  
-  .address-row {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-  }
-  
-  .address-row button {
-    padding: 0.6rem 0.9rem;
-    background-color: #9a6d50;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .address-row button:hover {
-    background-color: #805a3f;
-  }
-  
-  .preview-image {
-    max-width: 100%;
-    max-height: 140px;
-    display: block;
-    margin-top: 0.6rem;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid #ddd;
-  }
-  
-  .file-input {
-    margin-top: 0.4rem;
-    display: block;
-    font-size: 0.95rem;
-  }
-  
-  .edit-buttons {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-  }
-  
-  .save-button,
-  .cancel-button,
-  .edit-button {
-    padding: 0.6rem 1.4rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  .edit-button {
-    background-color: #9a6d50;
-    color: white;
-  }
-  
-  .edit-button:hover {
-    background-color: #865a3f;
-  }
-  
-  .save-button {
-    background-color: #4caf50;
-    color: white;
-  }
-  
-  .save-button:hover {
-    background-color: #3e9143;
-  }
-  
-  .cancel-button {
-    background-color: #d9534f;
-    color: white;
-  }
-  
-  .cancel-button:hover {
-    background-color: #b64541;
-  }
-  
+  color: #3d3026;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #fdfaf7 0%, #f0e5db 100%);
+}
+
+.shop-profile {
+  padding: 2rem;
+  background-color: transparent;
+}
+
+.shop-header-banner {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  height: 220px;
+  border-radius: 16px;
+  margin-bottom: 4rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.shop-info {
+  position: absolute;
+  bottom: -45px;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.shop-profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  object-fit: cover;
+  background-color: #fff9f5;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.shop-name {
+  font-size: 1.7rem;
+  font-weight: 600;
+  background: white;
+  padding: 0.9rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  color: #7c5a3a;
+  transition: all 0.3s ease;
+}
+
+.shop-name:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: scale(1.02);
+}
+
+.shop-details-card {
+  background: white;
+  padding: 2.8rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(124, 90, 58, 0.08);
+  max-width: 740px;
+  margin: 0 auto;
+  color: #3d3026;
+  transition: all 0.3s ease;
+}
+
+.shop-details-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 26px rgba(124, 90, 58, 0.15);
+}
+
+.shop-details-card h2 {
+  margin-bottom: 1.6rem;
+  color: #7c5a3a;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.shop-info-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.shop-info-list li {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.shop-edit-form label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-weight: 500;
+  color: #7c5a3a;
+}
+
+.shop-edit-form input,
+.shop-edit-form textarea {
+  width: 90%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #d6c6b8;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #fffdfc;
+  transition: border-color 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.shop-edit-form input:focus,
+.shop-edit-form textarea:focus {
+  border-color: #b58c6d;
+  outline: none;
+}
+
+.shop-edit-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.address-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.address-row button {
+  padding: 0.6rem 1.1rem;
+  background-color: #b58c6d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.address-row button:hover {
+  background-color: #956f52;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 140px;
+  margin-top: 0.6rem;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #e0d6cc;
+}
+
+.file-input {
+  margin-top: 0.6rem;
+  font-size: 1rem;
+  color: #5a4232;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.8rem;
+}
+
+.save-button,
+.cancel-button,
+.edit-button {
+  padding: 0.7rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-button {
+  background-color: #b58c6d;   
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #956f52;
+  transform: scale(1.05);
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #3d9442;
+  transform: scale(1.05);
+}
+
+.cancel-button {
+  background-color: #d9534f;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #b64541;
+  transform: scale(1.05);
+}

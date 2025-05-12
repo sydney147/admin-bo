@@ -1,19 +1,17 @@
 .layout {
   display: flex;
   height: 100vh;
-  width: 100vw; /* ✅ Ensure full width */
+  width: 100vw;
   overflow: hidden;
 }
 
 .sidebar {
-  background-color: #1e293b;
+  background-color: #4e342e;
   color: white;
   width: 60px;
   transition: width 0.3s ease;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .sidebar:hover {
@@ -23,7 +21,14 @@
 .logo {
   font-size: 1.5rem;
   padding: 1rem;
-  text-align: center;
+  text-align: left;
+  width: 100%;
+  padding-left: 1rem;
+}
+
+.menu-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .menu {
@@ -38,7 +43,7 @@
   align-items: center;
   gap: 12px;
   padding: 0.8rem;
-  color: #cbd5e1;
+  color: #d7ccc8;
   text-decoration: none;
   transition: all 0.2s;
   border-radius: 4px;
@@ -63,21 +68,17 @@
   width: auto;
 }
 
-.menu-item:hover {
-  background-color: #334155;
-  color: white;
-}
-
+.menu-item:hover,
 .menu-item.active {
-  background-color: #334155;
+  background-color: #6d4c41;
   color: white;
 }
 
 .logout-btn {
-  background-color: #ef4444;
+  background-color: transparent !important;
   border: none;
   padding: 10px;
-  color: white;
+  color: #d7ccc8;
   margin: 1rem;
   cursor: pointer;
   border-radius: 4px;
@@ -85,17 +86,27 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: background-color 0.2s, color 0.2s;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: none !important;
+}
+
+.logout-btn.active {
+  background-color: transparent;
 }
 
 .logout-btn .icon {
-  min-width: 24px;
-  text-align: center;
+  font-size: 1.2rem;
 }
 
 .logout-btn .text {
   opacity: 0;
   width: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, width 0.2s ease;
+  color: white;
 }
 
 .sidebar:hover .logout-btn .text {
@@ -103,27 +114,22 @@
   width: auto;
 }
 
-.logout-btn:hover {
-  background-color: #dc2626;
-}
-
 .main-content {
   flex: 1;
   padding: 2rem;
-  background: #f8fafc;
+  background: #efebe9;
   overflow-y: auto;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .sidebar {
     width: 60px;
   }
-  
+
   .sidebar:hover {
     width: 60px;
   }
-  
+
   .menu-item .text,
   .logout-btn .text {
     display: none;
@@ -140,6 +146,6 @@
   right: 12px;
   width: 10px;
   height: 10px;
-  background-color: red;
+  background-color: #d84315;
   border-radius: 50%;
 }

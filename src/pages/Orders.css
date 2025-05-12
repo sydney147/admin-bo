@@ -1,74 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+  background-color: #f5f3f0;
+  font-family: 'Inter', sans-serif;
+  color: #444;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  color: #3e342e;
+  border-left: 4px solid #bfa58a;
+  padding-left: 0.75rem;
+}
+
 .product-order-grid {
-    display: grid;
-    grid-auto-flow: column; /* Scroll horizontally */
-    grid-auto-columns: min-content; /* Only as wide as needed */
-    grid-template-rows: repeat(2, 1fr); /* Exactly 2 rows */
-    gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-    max-height: 380px;
-  }
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min-content;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  max-height: 400px;
+  margin-top: 0;
+}
+
+.product-order-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3f3225;
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+}
+
+.product-order-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  background-color: #fdfaf6;
+  border: 1px solid #e8dccc;
+  border-radius: 12px;
+  padding: 14px;
+  width: 350px;
+  font-family: 'Inter', sans-serif;
+  color: #4b3b2a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.product-order-card img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-right: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.product-order-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-family: 'Inter', sans-serif;
+}
+
+.product-order-info div {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  color: #5a4533;
   
-  .product-order-card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 12px;
-    background: white;
-    font-family: monospace;
-    width: 300px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-    color: black;
-  }
+}
+
+.product-order-info div span {
+  font-weight: 600;
+  margin-left: 8px;
   
-  .product-order-card img {
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    margin-right: 10px;
-    border-radius: 6px;
-  }
+}
+
+.btn-approve,
+.btn-deliver {
+  margin-top: 6px;
+  padding: 6px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: background-color 0.2s ease;
+}
+
+.btn-approve {
+  background-color: #a47148;
+}
+
+.btn-approve:hover {
+  background-color: #8e5f3a;
+}
+
+.btn-deliver {
+  background-color: #8c6849;
+}
+
+.btn-deliver:hover {
+  background-color: #75543a;
+}
+
+.btn-complete {
+  margin-top: 6px;
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: white;
+  font-size: 0.78rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-complete:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.delivery-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
   
-  .product-order-info {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 14px;
-  }
-  
-  .btn-approve,
-  .btn-deliver {
-    margin-top: 8px;
-    padding: 6px 12px;
-    font-family: monospace;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .btn-approve {
-    background-color: #16a34a;
-    color: white;
-  }
-  
-  .btn-deliver {
-    background-color: #2563eb;
-    color: white;
-  }
-  
-  .delivery-form {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 6px;
-  }
-  
-  .delivery-form input[type="datetime-local"] {
-    font-family: monospace;
-    font-size: 0.9rem;
-    padding: 5px;
-  }
-  
+}
+
+.delivery-form input[type="datetime-local"] {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  padding: 6px 10px;
+  border: 1px solid #d2bfa3;
+  border-radius: 6px;
+  background-color: #fff9f4;
+  color: #4b3621;
+}
+
+.warning-message {
+  color: red;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
