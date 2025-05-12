@@ -1,5 +1,5 @@
 import './Dashboard.css';
-import './sales.css';
+import '../pages/Sales.css';;
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ref, get, child, onValue } from 'firebase/database';
