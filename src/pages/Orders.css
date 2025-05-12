@@ -164,3 +164,104 @@ h1 {
   font-size: 0.75rem;
   margin-top: 4px;
 }
+
+/* Delivery Dialog Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delivery-dialog {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.delivery-dialog h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group .react-datepicker-wrapper {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dialog-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dialog-actions button:first-child {
+  background: #f0f0f0;
+}
+
+.dialog-actions button:last-child {
+  background: #4CAF50;
+  color: white;
+}
+
+.dialog-actions button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* React DatePicker overrides */
+.react-datepicker {
+  font-family: inherit;
+  border-radius: 4px;
+  border-color: #ddd;
+}
+
+.react-datepicker__header {
+  background-color: #f7f7f7;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  color: #333;
+  font-weight: bold;
+}
+
+.react-datepicker__day--selected {
+  background-color: #4CAF50;
+}
+
+.react-datepicker__day--selected:hover {
+  background-color: #45a049;
+}

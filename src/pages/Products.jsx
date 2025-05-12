@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ref, get, remove, update, push } from "firebase/database";
+import { useEffect, useState, useRef } from "react";
+import { ref, get, remove, update, push, set } from "firebase/database";
 import { database } from "../firebase";
 import {
   getStorage,
@@ -31,9 +31,11 @@ function Products() {
   const [newImage, setNewImage] = useState(null);
   const [newGallery, setNewGallery] = useState([]);
   const [loading, setLoading] = useState(false);
+  const effectRan = useRef(false);
 
   useEffect(() => {
-    if (!shopId || cache) return;
+    if (effectRan.current) return;
+    effectRan.current = true;
 
     const fetchProducts = async () => {
       const productsRef = ref(database, `shops/${shopId}/products`);
@@ -50,12 +52,17 @@ function Products() {
         }
 
         setProductsByType(grouped);
-        setCache(grouped);
       }
     };
 
     fetchProducts();
-  }, [shopId, cache]);
+  }, [shopId]);
+  useEffect(() => {
+    if (cache) {
+      setProductsByType(cache);
+    }
+  }, [cache]);
+
 
   const handleDelete = async (productId) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -88,30 +95,76 @@ function Products() {
       return;
     }
 
+    if (loading) return; // Prevent multiple submissions
     setLoading(true);
+
     const updates = { ...editForm };
 
-    if (newImage) {
-      const imageRef = sRef(storage, `product_images/${Date.now()}.jpg`);
-      await uploadBytes(imageRef, newImage);
-      updates.imageUrl = await getDownloadURL(imageRef);
-    }
-
-    if (newGallery.length > 0) {
-      const galleryUrls = [];
-      for (const file of newGallery) {
-        const imgRef = sRef(storage, `product_gallery/${Date.now()}_${file.name}`);
-        await uploadBytes(imgRef, file);
-        const url = await getDownloadURL(imgRef);
-        galleryUrls.push(url);
+    try {
+      // Handle image upload
+      if (newImage) {
+        const imageRef = sRef(storage, `product_images/${Date.now()}.jpg`);
+        await uploadBytes(imageRef, newImage);
+        updates.imageUrl = await getDownloadURL(imageRef);
       }
-      updates.galleryImages = galleryUrls;
-    }
 
-    await update(ref(database, `shops/${shopId}/products/${selectedProduct.id}`), updates);
-    setLoading(false);
-    window.location.reload();
+      // Handle gallery images upload
+      if (newGallery.length > 0) {
+        const galleryUrls = [];
+        for (const file of newGallery) {
+          const imgRef = sRef(storage, `product_gallery/${Date.now()}_${file.name}`);
+          await uploadBytes(imgRef, file);
+          const url = await getDownloadURL(imgRef);
+          galleryUrls.push(url);
+        }
+        updates.galleryImages = galleryUrls;
+      }
+
+      // Convert tags string to an array
+      if (editForm.tags) {
+        updates.tags = editForm.tags.split(",").map((tag) => tag.trim());
+      }
+
+      const productsRef = ref(database, `shops/${shopId}/products`);
+
+      if (!selectedProduct?.id) {
+        // Adding a new product
+        const newProductRef = push(productsRef);
+        await set(newProductRef, updates);
+      } else {
+        // Updating an existing product
+        await update(ref(database, `shops/${shopId}/products/${selectedProduct.id}`), updates);
+      }
+
+      // Refresh the products from Firebase instead of updating local state
+      const snapshot = await get(productsRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const grouped = {};
+
+        for (const id in data) {
+          const product = data[id];
+          const type = product.productType || "Others";
+          if (!grouped[type]) grouped[type] = [];
+          grouped[type].push({ ...product, id });
+        }
+
+        setProductsByType(grouped);
+      }
+
+      setSelectedProduct(null);
+      setIsEditing(false);
+      setNewImage(null);
+      setNewGallery([]);
+    } catch (error) {
+      console.error("Failed to save product:", error);
+      alert("An error occurred while saving the product. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+
 
   const filteredProducts = (list) =>
     list.filter((p) =>
