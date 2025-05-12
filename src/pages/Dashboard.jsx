@@ -1,7 +1,7 @@
 import './Dashboard.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ref, get, child } from 'firebase/database';
+import { ref, get, child, onValue } from 'firebase/database';
 import { database } from '../firebase';
 import axios from 'axios';
 import MonthlySalesChart from '../components/MonthlySalesChart';
@@ -24,145 +24,142 @@ export default function Dashboard() {
   });
   const [stats, setStats] = useState({
     totalOrders: 0,
+    itemsSold: 0,
     totalRevenue: 0,
     monthlySalesTrend: {},
-    topThisMonth: [],
     topForecasts: [],
     activeProducts: 0,
     averageRating: 0,
     productTypes: {},
-    recentFeedback: []
+    recentFeedback: [],
+    forecastSummary: {
+      totalPredictedUnits: 0,
+      totalEstimatedWorkers: 0,
+      totalEstimatedRattanMeters: 0,
+      totalProjectedRevenue: 0,
+      explanation: ""
+    }
   });
 
+  // Real-time product count listener
   useEffect(() => {
     if (!shopId) return;
 
-    const cacheKey = `dashboard_cache_${shopId}_${mth}_${yr}`;
-    const cached = sessionStorage.getItem(cacheKey);
+    const productsRef = ref(database, `shops/${shopId}/products`);
+    const unsubscribe = onValue(productsRef, (snapshot) => {
+      const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+      setStats(prev => ({
+        ...prev,
+        activeProducts: count
+      }));
+    });
 
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      setShopInfo(parsed.shopInfo);
-      setStats(parsed.stats);
-      return; // ✅ Use cached data and skip fetch
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [shopId]);
+
+  useEffect(() => {
+  if (!shopId) return;
+
+  const cacheKey = `dashboard_cache_${shopId}_${mth}_${yr}`;
+  const cached = sessionStorage.getItem(cacheKey);
+
+  if (cached) {
+    const parsed = JSON.parse(cached);
+    setShopInfo(parsed.shopInfo);
+    setStats(prev => ({
+      ...parsed.stats,
+      forecastSummary: parsed.stats.forecastSummary ?? {
+        totalPredictedUnits: 0,
+        totalEstimatedWorkers: 0,
+        totalEstimatedRattanMeters: 0,
+        totalProjectedRevenue: 0,
+        explanation: "No forecast available."
+      },
+      activeProducts: prev.activeProducts
+    }));
+    return;
+  }
+
+  setLoading(true);
+
+  (async () => {
+    try {
+      const [perfRes, shopsRes, fcRes] = await Promise.all([
+        axios.get(`${BASE_API}/shop-performance/${shopId}?month=${mth}&year=${yr}`),
+        axios.get(`${BASE_API}/shops`),
+        axios.get(`${BASE_API}/forecast/shop/${shopId}?month=${mth}&year=${yr}`)
+      ]);
+
+      const productsSnap = await get(ref(database, `shops/${shopId}/products`));
+      const products = productsSnap.exists() ? Object.values(productsSnap.val()) : [];
+
+      const ratings = [];
+      const types = {};
+      products.forEach(p => {
+        Object.values(p.ratings || {}).forEach(r => {
+          ratings.push({ ...r, productName: p.productName });
+        });
+        if (!types[p.productType]) types[p.productType] = [];
+        types[p.productType].push(p);
+      });
+      const allStars = ratings.map(r => r.stars);
+
+      const shopsList = Array.isArray(shopsRes.data) ? shopsRes.data : [];
+      const me = shopsList.find(s => s.shopId === shopId) || {};
+
+      const updatedShopInfo = {
+        storeName: me.storeName || 'Your Shop',
+        storePhotoUrl: me.storePhotoUrl || null,
+        storeBackgroundUrl: me.storeBackgroundUrl || null
+      };
+
+      const forecastData = fcRes.data || {};
+      const topForecasts = (forecastData.productForecasts || [])
+        .sort((a, b) => b.predictedNextMonth - a.predictedNextMonth)
+        .slice(0, 5);
+
+      const updatedStats = {
+        totalOrders: perfRes.data.totalOrders || 0,
+        itemsSold: perfRes.data.itemsSold || 0,
+        totalRevenue: perfRes.data.totalRevenue || 0,
+        monthlySalesTrend: perfRes.data.monthlySalesTrend || {},
+        topForecasts: topForecasts,
+        forecastSummary: {
+          totalPredictedUnits: forecastData.totalPredictedUnits || 0,
+          totalEstimatedWorkers: forecastData.totalEstimatedWorkers || 0,
+          totalEstimatedRattanMeters: forecastData.totalEstimatedRattanMeters || 0,
+          totalProjectedRevenue: forecastData.totalProjectedRevenue || 0,
+          explanation: forecastData.explanation || "No explanation available."
+        },
+        averageRating: allStars.length
+          ? allStars.reduce((a, b) => a + b, 0) / allStars.length
+          : 0,
+        productTypes: types,
+        recentFeedback: ratings.slice(0, 5)
+      };
+
+      setShopInfo(updatedShopInfo);
+      setStats(prev => ({
+        ...updatedStats,
+        activeProducts: prev.activeProducts
+      }));
+
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        shopInfo: updatedShopInfo,
+        stats: updatedStats
+      }));
+    } catch (err) {
+      console.error("Dashboard fetch failed:", err);
+    } finally {
+      setLoading(false);
     }
+  })();
+}, [shopId, mth, yr]);
 
-    setLoading(true);
-
-    (async () => {
-      try {
-        const [perfRes, prodRes, shopsRes, fcRes] = await Promise.all([
-          axios.get(`${BASE_API}/shop-performance/${shopId}?month=${mth}&year=${yr}`),
-          axios.get(`${BASE_API}/products/shop/${shopId}`),
-          axios.get(`${BASE_API}/shops`),
-          axios.get(`${BASE_API}/forecast/shop/${shopId}?month=${mth}&year=${yr}`)
-        ]);
-
-        const products = Array.isArray(prodRes.data) ? prodRes.data : [];
-        const productMap = Object.fromEntries(products.map(p => [p.productId, p.productName]));
-
-        const salesSnap = await get(child(ref(database), 'sales'));
-        const allSales = salesSnap.exists() ? salesSnap.val() : {};
-
-        const topRaw = {};
-        Object.values(allSales).forEach(prodSales => {
-          Object.values(prodSales).forEach(sale => {
-            if (sale.shopId !== shopId) return;
-            const ts = sale.timestamp > 1e12 ? sale.timestamp : sale.timestamp * 1000;
-            const d = new Date(ts);
-            if (d.getFullYear() === yr && (d.getMonth() + 1) === mth) {
-              const pid = sale.productId;
-              if (!topRaw[pid]) topRaw[pid] = {
-                productId: pid,
-                productName: productMap[pid] || 'Unknown',
-                quantitySold: 0
-              };
-              topRaw[pid].quantitySold += sale.quantity || 0;
-            }
-          });
-        });
-        const topThisMonth = Object.values(topRaw).sort((a, b) => b.quantitySold - a.quantitySold).slice(0, 5);
-
-        const trendRaw = {};
-        Object.values(allSales).forEach(prodSales => {
-          Object.values(prodSales).forEach(sale => {
-            if (sale.shopId !== shopId) return;
-            const ts = sale.timestamp > 1e12 ? sale.timestamp : sale.timestamp * 1000;
-            const d = new Date(ts);
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-            trendRaw[key] = (trendRaw[key] || 0) + (sale.quantity || 0);
-          });
-        });
-
-        const soldMonths = Object.keys(trendRaw).sort();
-        const monthlySalesTrend = {};
-        if (soldMonths.length) {
-          let [fy, fm] = soldMonths[0].split('-').map(Number);
-          const now = new Date();
-          const ey = now.getFullYear();
-          let em = now.getMonth() + 1;
-          while (fy < ey || (fy === ey && fm <= em)) {
-            const key = `${fy}-${String(fm).padStart(2, '0')}`;
-            monthlySalesTrend[key] = trendRaw[key] || 0;
-            fm++;
-            if (fm > 12) { fm = 1; fy++; }
-          }
-        }
-
-        const ratings = [];
-        const types = {};
-        products.forEach(p => {
-          Object.values(p.ratings || {}).forEach(r => {
-            ratings.push({ ...r, productName: p.productName });
-          });
-          if (!types[p.productType]) types[p.productType] = [];
-          types[p.productType].push(p);
-        });
-        const allStars = ratings.map(r => r.stars);
-
-        const shopsList = Array.isArray(shopsRes.data) ? shopsRes.data : [];
-        const me = shopsList.find(s => s.shopId === shopId) || {};
-
-        const updatedShopInfo = {
-          storeName: me.storeName || 'Your Shop',
-          storePhotoUrl: me.storePhotoUrl || null,
-          storeBackgroundUrl: me.storeBackgroundUrl || null
-        };
-        const updatedStats = {
-          totalOrders: perfRes.data.totalOrders,
-          totalRevenue: perfRes.data.totalRevenue,
-          monthlySalesTrend,
-          topThisMonth,
-          topForecasts: fcRes.data.productForecasts?.slice(0, 5) || [],
-          activeProducts: products.length,
-          averageRating: allStars.length
-            ? allStars.reduce((a, b) => a + b, 0) / allStars.length
-            : 0,
-          productTypes: types,
-          recentFeedback: ratings.slice(0, 5)
-        };
-
-        setShopInfo(updatedShopInfo);
-        setStats(updatedStats);
-
-        // ✅ Cache it
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          shopInfo: updatedShopInfo,
-          stats: updatedStats
-        }));
-      }
-      catch (err) {
-        console.error("Dashboard fetch failed:", err);
-      }
-      finally {
-        setLoading(false);
-      }
-    })();
-  }, [shopId, mth, yr]);
 
   const formatMonthYear = () =>
     new Date(yr, mth - 1)
-      .toLocaleString('default', { month: 'long', year: 'numeric' })
+      .toLocaleString('default', { month: 'long', year: 'numeric' });
 
   return (
     <div className="dashboard">
@@ -197,12 +194,12 @@ export default function Dashboard() {
         </div>
         <div className="stats-cards">
           <div className="card">🛒 <strong>Orders</strong><br />{stats.totalOrders}</div>
+          <div className="card">📦 <strong>Items Sold</strong><br />{stats.itemsSold}</div>
           <div className="card">
             💰 <strong>Revenue</strong><br />
             ₱{(stats.totalRevenue || 0).toLocaleString()}
           </div>
-          <div className="card">📦 <strong>Products</strong><br />{stats.activeProducts}</div>
-          <div className="card">⭐ <strong>Avg. Rating</strong><br />{stats.averageRating.toFixed(1)}</div>
+          <div className="card">📊 <strong>Products</strong><br />{stats.activeProducts}</div>
         </div>
       </div>
 
@@ -215,22 +212,40 @@ export default function Dashboard() {
         }
       </div>
 
-      {/* Top Selling */}
+      {/* Sales Forecast Summary */}
       <div className="column">
-        <div className="column-header">
-          <h2>Top Selling Products – {formatMonthYear()}</h2>
-        </div>
-        {loading
-          ? <div>Loading top products…</div>
-          : stats.topThisMonth.length === 0
-            ? <div>No sales data for {formatMonthYear()}</div>
-            : <TopSellingProductsChart data={stats.topThisMonth} />
-        }
+        <div className="column-header"><h2>Next Month Forecast</h2></div>
+        {loading ? (
+          <div>Loading forecast...</div>
+        ) : (
+          <div className="forecast-summary">
+            <div className="forecast-card">
+              <h3>Projected Sales</h3>
+              <p>{stats.forecastSummary?.totalPredictedUnits ?? 0} units</p>
+            </div>
+            <div className="forecast-card">
+              <h3>Projected Revenue</h3>
+              <p>₱{(stats.forecastSummary?.totalProjectedRevenue ?? 0).toLocaleString()}</p>
+            </div>
+            <div className="forecast-card">
+              <h3>Materials Needed</h3>
+              <p>{stats.forecastSummary?.totalEstimatedRattanMeters ?? 0}m rattan</p>
+            </div>
+            <div className="forecast-card">
+              <h3>Workers Needed</h3>
+              <p>{stats.forecastSummary?.totalEstimatedWorkers ?? 0}</p>
+            </div>
+            <div className="forecast-explanation">
+              <p>{stats.forecastSummary?.explanation ?? "No explanation available."}</p>
+            </div>
+          </div>
+
+        )}
       </div>
 
-      {/* Forecast */}
+      {/* Top Forecasted Products */}
       <div className="column">
-        <div className="column-header"><h2>Top Forecasted Products Next Month</h2></div>
+        <div className="column-header"><h2>Top Forecasted Products</h2></div>
         {loading
           ? <div>Loading forecasts…</div>
           : stats.topForecasts.length === 0
@@ -246,7 +261,6 @@ export default function Dashboard() {
           <button className="btn-outline" onClick={() => navigate('/home/products')}>
             See more
           </button>
-
         </div>
 
         {Object.entries(stats.productTypes).map(([type, list]) => (
@@ -265,7 +279,6 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
-
         ))}
       </div>
 
@@ -276,7 +289,6 @@ export default function Dashboard() {
           <button className="btn-outline" onClick={() => navigate('/products')}>
             See more
           </button>
-
         </div>
         <ul>
           {stats.recentFeedback.map((f, i) => (

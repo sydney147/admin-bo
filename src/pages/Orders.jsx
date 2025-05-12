@@ -2,12 +2,20 @@ import { useEffect, useState } from 'react';
 import { ref, get, child, update } from 'firebase/database';
 import { database } from '../firebase';
 import OrderModal from './OrderModal';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './Orders.css';
 
 export default function ShopOrders() {
   const shopId = localStorage.getItem('shopId');
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
+  const [deliveryDates, setDeliveryDates] = useState({
+    start: new Date(),
+    end: new Date(Date.now() + 86400000), // +1 day
+    time: '12:00'
+  });
 
   const [orders, setOrders] = useState({
     pending: [],
@@ -60,12 +68,62 @@ export default function ShopOrders() {
     fetchOrders();
   };
 
-  const handleSetDelivery = async (orderId, from, to) => {
-    await update(ref(database, `shopOrders/${shopId}/${orderId}`), {
-      status: 'To Deliver',
-      deliveryEstimate: { from, to }
-    });
-    fetchOrders();
+  const handleSetDelivery = async (order) => {
+    setSelectedOrder(order);
+    setShowDeliveryDialog(true);
+  };
+
+  const confirmDeliveryDates = async () => {
+    if (!selectedOrder) return;
+    
+    try {
+      // Parse the time
+      const [hours, minutes] = deliveryDates.time.split(':').map(Number);
+      
+      // Set time for both dates
+      const fromDate = new Date(deliveryDates.start);
+      fromDate.setHours(hours, minutes);
+      
+      const toDate = new Date(deliveryDates.end);
+      toDate.setHours(hours, minutes);
+
+      // Format dates as strings (matching Android format)
+      const dateFmt = new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      });
+      const timeFmt = new Intl.DateTimeFormat("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      const fromStr = `${dateFmt.format(fromDate)} ${timeFmt.format(fromDate)}`;
+      const toStr = `${dateFmt.format(toDate)} ${timeFmt.format(toDate)}`;
+
+      // Update both shopOrders and userOrders
+      const updates = {
+        [`/shopOrders/${shopId}/${selectedOrder.orderId}/status`]: 'To Deliver',
+        [`/shopOrders/${shopId}/${selectedOrder.orderId}/deliveryEstimate`]: {
+          from: fromStr,
+          to: toStr
+        },
+        [`/userOrders/${selectedOrder.buyerId}/${selectedOrder.orderId}/status`]: 'To Deliver',
+        [`/userOrders/${selectedOrder.buyerId}/${selectedOrder.orderId}/deliveryEstimate`]: {
+          from: fromStr,
+          to: toStr
+        }
+      };
+
+      await update(ref(database), updates);
+      fetchOrders();
+      setShowDeliveryDialog(false);
+      alert(`Delivery estimate set: ${fromStr} – ${toStr}`);
+    } catch (error) {
+      console.error('Error setting delivery dates:', error);
+      alert('Failed to set delivery dates. Please try again.');
+    }
   };
 
   return (
@@ -75,30 +133,87 @@ export default function ShopOrders() {
         <div>Loading orders...</div>
       ) : (
         <>
-          <OrderCategory title="Pending Orders" orders={orders.pending} onApprove={handleApprove} onCardClick={setSelectedOrder} />
-          <OrderCategory title="Approved Orders" orders={orders.approved} onSetDelivery={handleSetDelivery} onCardClick={setSelectedOrder} />
-          <OrderCategory title="To Deliver Orders" orders={orders.toDeliver} onCardClick={setSelectedOrder} />
-          <OrderCategory title="Completed Orders" orders={orders.completed} onCardClick={setSelectedOrder} />
+          <OrderCategory 
+            title="Pending Orders" 
+            orders={orders.pending} 
+            onApprove={handleApprove} 
+            onCardClick={setSelectedOrder} 
+          />
+          <OrderCategory 
+            title="Approved Orders" 
+            orders={orders.approved} 
+            onSetDelivery={handleSetDelivery} 
+            onCardClick={setSelectedOrder} 
+          />
+          <OrderCategory 
+            title="To Deliver Orders" 
+            orders={orders.toDeliver} 
+            onCardClick={setSelectedOrder} 
+          />
+          <OrderCategory 
+            title="Completed Orders" 
+            orders={orders.completed} 
+            onCardClick={setSelectedOrder} 
+          />
         </>
       )}
-      {selectedOrder && <OrderModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />}
+      
+      {selectedOrder && (
+        <OrderModal 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
+        />
+      )}
+
+      {showDeliveryDialog && (
+        <div className="modal-backdrop">
+          <div className="delivery-dialog">
+            <h3>Set Delivery Estimate</h3>
+            <div className="form-group">
+              <label>Start Date:</label>
+              <DatePicker
+                selected={deliveryDates.start}
+                onChange={(date) => setDeliveryDates(prev => ({ ...prev, start: date }))}
+                minDate={new Date()}
+                maxDate={new Date(Date.now() + 12096e5)} // 14 days
+                dateFormat="MMMM d, yyyy"
+              />
+            </div>
+            <div className="form-group">
+              <label>End Date:</label>
+              <DatePicker
+                selected={deliveryDates.end}
+                onChange={(date) => setDeliveryDates(prev => ({ ...prev, end: date }))}
+                minDate={deliveryDates.start}
+                maxDate={new Date(Date.now() + 12096e5)} // 14 days
+                dateFormat="MMMM d, yyyy"
+              />
+            </div>
+            <div className="form-group">
+              <label>Time:</label>
+              <input
+                type="time"
+                value={deliveryDates.time}
+                onChange={(e) => setDeliveryDates(prev => ({ ...prev, time: e.target.value }))}
+              />
+            </div>
+            <div className="dialog-actions">
+              <button onClick={() => setShowDeliveryDialog(false)}>Cancel</button>
+              <button 
+                onClick={confirmDeliveryDates}
+                disabled={!deliveryDates.start || !deliveryDates.end || !deliveryDates.time}
+              >
+                Confirm Delivery
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function OrderCategory({ title, orders, onApprove, onSetDelivery, onCardClick }) {
-  const [inputs, setInputs] = useState({});
-
-  const handleInputChange = (orderId, field, value) => {
-    setInputs(prev => ({
-      ...prev,
-      [orderId]: {
-        ...prev[orderId],
-        [field]: value
-      }
-    }));
-  };
-
   return (
     <div className="column">
       <h2>{title}</h2>
@@ -122,35 +237,27 @@ function OrderCategory({ title, orders, onApprove, onSetDelivery, onCardClick })
                   <p><small>Total:</small> ₱{(order.grandTotal || 0).toLocaleString()}</p>
 
                   {order.status === 'Pending' && onApprove && (
-                    <button onClick={(e) => { e.stopPropagation(); onApprove(order.orderId); }} className="btn-approve">Approve</button>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        onApprove(order.orderId); 
+                      }} 
+                      className="btn-approve"
+                    >
+                      Approve
+                    </button>
                   )}
 
                   {order.status === 'Approved' && onSetDelivery && (
-                    <div className="delivery-form" onClick={(e) => e.stopPropagation()}>
-                      <label>From:</label>
-                      <input
-                        type="datetime-local"
-                        onChange={(e) => handleInputChange(order.orderId, 'from', e.target.value)}
-                      />
-                      <label>To:</label>
-                      <input
-                        type="datetime-local"
-                        onChange={(e) => handleInputChange(order.orderId, 'to', e.target.value)}
-                      />
-                      <button
-                        className="btn-deliver"
-                        onClick={() =>
-                          onSetDelivery(
-                            order.orderId,
-                            inputs[order.orderId]?.from,
-                            inputs[order.orderId]?.to
-                          )
-                        }
-                        disabled={!inputs[order.orderId]?.from || !inputs[order.orderId]?.to}
-                      >
-                        Set Delivery Date
-                      </button>
-                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSetDelivery(order);
+                      }}
+                      className="btn-deliver"
+                    >
+                      Set Delivery
+                    </button>
                   )}
                 </div>
               </div>
